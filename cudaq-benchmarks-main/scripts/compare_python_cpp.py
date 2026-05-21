@@ -87,6 +87,11 @@ def main():
     parser = argparse.ArgumentParser(
         description="Run the Python and C++ CUDA-Q benchmarks with matching settings."
     )
+    parser.add_argument(
+        "--python-exe",
+        default=sys.executable,
+        help="Python interpreter used to run benchmark.py (default: sys.executable).",
+    )
     parser.add_argument("--circuit", required=True, choices=["GHZ", "QFT", "QAOA"])
     parser.add_argument("-n", "--num-qubits", type=int, required=True)
     parser.add_argument("-s", "--shots", "--num-shots", type=int, default=1024)
@@ -117,13 +122,19 @@ def main():
         )
 
     env = os.environ.copy()
+    existing_pythonpath = env.get("PYTHONPATH", "")
+    env["PYTHONPATH"] = (
+        str(REPO_ROOT) + os.pathsep + existing_pythonpath
+        if existing_pythonpath
+        else str(REPO_ROOT)
+    )
     with tempfile.TemporaryDirectory(prefix="cudaq-bench-compare-") as tmp:
         tmp_path = Path(tmp)
         python_csv = tmp_path / "python.csv"
         cpp_csv = tmp_path / "cpp.csv"
 
         python_cmd = [
-            sys.executable,
+            args.python_exe,
             "benchmark.py",
             "--circuit",
             args.circuit,
