@@ -14,7 +14,7 @@ all: $(EXE)
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-$(EXE): $(SOURCES) circuits.hpp | $(BUILD_DIR)
+$(EXE): $(SOURCES) circuits.hpp kernels.hpp | $(BUILD_DIR)
 	$(CXX) $(CXXFLAGS) $(NVQXXFLAGS) $(SOURCES) -o $(EXE)
 
 clean:
